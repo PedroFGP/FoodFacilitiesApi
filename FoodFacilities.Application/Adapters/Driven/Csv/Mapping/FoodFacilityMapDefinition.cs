@@ -1,14 +1,8 @@
 ﻿using CsvHelper.Configuration;
 using FoodFacilities.Domain.Entities;
 using FoodFacilities.Domain.Utils;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace FoodFacilities.Application.Adapters.Driven.Csv1571753
-.Mapping
+namespace FoodFacilities.Application.Adapters.Driven.Csv.Mapping
 {
     public sealed class FoodFacilityMapDefinition : ClassMap<FoodFacility>
     {

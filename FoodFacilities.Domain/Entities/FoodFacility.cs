@@ -32,7 +32,7 @@ namespace FoodFacilities.Domain.Entities
         //Maybe change to custom Enumeration...
         public string? Status { get; set; }
 
-        public ICollection<string> FoodItems { get; set; }
+        public ICollection<string>? FoodItems { get; set; }
 
         public double? X { get; set; }
 

@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "DyHrpGK+IKlOnNeSOvYPXilUZotYaHy/pqms3N4doBOxD1YpiAjRU46PWeAFLlox1g3RyrwR8DNdTQ0rVUQSmw==",
+  "dgSpecHash": "HKsxrBsxqX+RDFvnnS0moA1X6wMEaIGj0zrMZ7/ePAKi3Mvhl45wNtdJCOGHGj5BcUWedL1k2PE+7552wNLAJg==",
   "success": true,
-  "projectFilePath": "D:\\Projects\\FoodFacilities\\FoodFacilities.Adapters.Driving.WebApi\\FoodFacilities.Adapters.Driving.WebApi.csproj",
+  "projectFilePath": "D:\\Projects\\FoodFacilitiesApi\\FoodFacilities.Adapters.Driving.WebApi\\FoodFacilities.Adapters.Driving.WebApi.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Pedro\\.nuget\\packages\\automapper\\12.0.1\\automapper.12.0.1.nupkg.sha512",
     "C:\\Users\\Pedro\\.nuget\\packages\\automapper.extensions.microsoft.dependencyinjection\\12.0.1\\automapper.extensions.microsoft.dependencyinjection.12.0.1.nupkg.sha512",

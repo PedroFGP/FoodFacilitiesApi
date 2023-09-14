@@ -1,6 +1,5 @@
 ﻿using FoodFacilities.Domain.Adapters.Driven;
 using FoodFacilities.Domain.Adapters.Driving.Handlers;
-using FoodFacilities.Domain.Adapters.Driving.Queries;
 using FoodFacilities.Domain.Entities;
 
 namespace FoodFacilities.Domain.Services.Handlers

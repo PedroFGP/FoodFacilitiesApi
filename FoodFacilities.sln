@@ -11,8 +11,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Adapters", "Adapters", "{4D
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Driving", "Driving", "{0EDA2BB5-25EF-45B9-91EF-A6FC9C352816}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Driven", "Driven", "{711B44E7-9A6B-46CB-A6CC-9BB0176D1F62}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FoodFacilities.Adapters.Driving.WebApi", "FoodFacilities.Adapters.Driving.WebApi\FoodFacilities.Adapters.Driving.WebApi.csproj", "{0632EC4C-42E0-401E-84CF-7429B5FF43E8}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Database", "Database", "{FE4D224A-36B4-4789-9DD8-E69A958D1642}"
@@ -44,7 +42,6 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{0EDA2BB5-25EF-45B9-91EF-A6FC9C352816} = {4DCC25A3-14DB-4690-A3CD-CD8B639F4290}
-		{711B44E7-9A6B-46CB-A6CC-9BB0176D1F62} = {4DCC25A3-14DB-4690-A3CD-CD8B639F4290}
 		{0632EC4C-42E0-401E-84CF-7429B5FF43E8} = {0EDA2BB5-25EF-45B9-91EF-A6FC9C352816}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution

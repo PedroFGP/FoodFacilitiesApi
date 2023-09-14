@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "ak6ofpMeL/u/832fXZ04l4JnwluDz24D/ka6wyRzt4pLM4Tw9Tbj+6sYJatCrLfRC0gSkEAPuuJgRKf2KqNuEw==",
+  "dgSpecHash": "knN8nccJkmHoD4nJVuAZX/3GyvRXHCyu+MLc20tS/Z6M3WklGOMwIlDR/53Yk+k2cozIgmwaxXeph1VWw7RO+g==",
   "success": true,
-  "projectFilePath": "D:\\Projects\\FoodFacilities\\FoodFacilities.Domain\\FoodFacilities.Domain.csproj",
+  "projectFilePath": "D:\\Projects\\FoodFacilitiesApi\\FoodFacilities.Domain\\FoodFacilities.Domain.csproj",
   "expectedPackageFiles": [],
   "logs": []
 }

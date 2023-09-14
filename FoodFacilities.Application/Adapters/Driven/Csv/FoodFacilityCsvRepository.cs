@@ -1,5 +1,5 @@
 ﻿using CsvHelper;
-using FoodFacilities.Application.Adapters.Driven.Csv1571753.Mapping;
+using FoodFacilities.Application.Adapters.Driven.Csv.Mapping;
 using FoodFacilities.Domain.Adapters.Driven;
 using FoodFacilities.Domain.Entities;
 using Microsoft.Extensions.Configuration;

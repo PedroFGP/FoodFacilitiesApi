@@ -1002,11 +1002,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\Projects\\FoodFacilities\\FoodFacilities.Adapters.Driving.WebApi\\FoodFacilities.Adapters.Driving.WebApi.csproj",
+      "projectUniqueName": "D:\\Projects\\FoodFacilitiesApi\\FoodFacilities.Adapters.Driving.WebApi\\FoodFacilities.Adapters.Driving.WebApi.csproj",
       "projectName": "FoodFacilities.Adapters.Driving.WebApi",
-      "projectPath": "D:\\Projects\\FoodFacilities\\FoodFacilities.Adapters.Driving.WebApi\\FoodFacilities.Adapters.Driving.WebApi.csproj",
+      "projectPath": "D:\\Projects\\FoodFacilitiesApi\\FoodFacilities.Adapters.Driving.WebApi\\FoodFacilities.Adapters.Driving.WebApi.csproj",
       "packagesPath": "C:\\Users\\Pedro\\.nuget\\packages\\",
-      "outputPath": "D:\\Projects\\FoodFacilities\\FoodFacilities.Adapters.Driving.WebApi\\obj\\",
+      "outputPath": "D:\\Projects\\FoodFacilitiesApi\\FoodFacilities.Adapters.Driving.WebApi\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -1029,11 +1029,11 @@
         "net6.0": {
           "targetAlias": "net6.0",
           "projectReferences": {
-            "D:\\Projects\\FoodFacilities\\FoodFacilities.Application\\FoodFacilities.Application.csproj": {
-              "projectPath": "D:\\Projects\\FoodFacilities\\FoodFacilities.Application\\FoodFacilities.Application.csproj"
+            "D:\\Projects\\FoodFacilitiesApi\\FoodFacilities.Application\\FoodFacilities.Application.csproj": {
+              "projectPath": "D:\\Projects\\FoodFacilitiesApi\\FoodFacilities.Application\\FoodFacilities.Application.csproj"
             },
-            "D:\\Projects\\FoodFacilities\\FoodFacilities.Domain\\FoodFacilities.Domain.csproj": {
-              "projectPath": "D:\\Projects\\FoodFacilities\\FoodFacilities.Domain\\FoodFacilities.Domain.csproj"
+            "D:\\Projects\\FoodFacilitiesApi\\FoodFacilities.Domain\\FoodFacilities.Domain.csproj": {
+              "projectPath": "D:\\Projects\\FoodFacilitiesApi\\FoodFacilities.Domain\\FoodFacilities.Domain.csproj"
             }
           }
         }
