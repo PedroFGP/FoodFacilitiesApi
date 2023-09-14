@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "dgSpecHash": "giEE7wIM3jdEDfInpdYtKPC2LY2+1cW7n9pbgPT/rTGMGykEddwvvVNXMwyBFpo8ZMJ53eWQ/K7jQIuSkJ7oEQ==",
+  "success": true,
+  "projectFilePath": "D:\\Projects\\FoodFacilities\\FoodFacilities.Application\\FoodFacilities.Application.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Pedro\\.nuget\\packages\\csvhelper\\30.0.1\\csvhelper.30.0.1.nupkg.sha512",
+    "C:\\Users\\Pedro\\.nuget\\packages\\microsoft.extensions.configuration\\7.0.0\\microsoft.extensions.configuration.7.0.0.nupkg.sha512",
+    "C:\\Users\\Pedro\\.nuget\\packages\\microsoft.extensions.configuration.abstractions\\7.0.0\\microsoft.extensions.configuration.abstractions.7.0.0.nupkg.sha512",
+    "C:\\Users\\Pedro\\.nuget\\packages\\microsoft.extensions.primitives\\7.0.0\\microsoft.extensions.primitives.7.0.0.nupkg.sha512",
+    "C:\\Users\\Pedro\\.nuget\\packages\\system.runtime.compilerservices.unsafe\\6.0.0\\system.runtime.compilerservices.unsafe.6.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}

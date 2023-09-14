@@ -1,0 +1,12 @@
+D:\Projects\FoodFacilities\FoodFacilities.Domain\bin\Debug\net6.0\FoodFacilities.Domain.deps.json
+D:\Projects\FoodFacilities\FoodFacilities.Domain\bin\Debug\net6.0\FoodFacilities.Domain.dll
+D:\Projects\FoodFacilities\FoodFacilities.Domain\bin\Debug\net6.0\FoodFacilities.Domain.pdb
+D:\Projects\FoodFacilities\FoodFacilities.Domain\obj\Debug\net6.0\FoodFacilities.Domain.csproj.AssemblyReference.cache
+D:\Projects\FoodFacilities\FoodFacilities.Domain\obj\Debug\net6.0\FoodFacilities.Domain.GeneratedMSBuildEditorConfig.editorconfig
+D:\Projects\FoodFacilities\FoodFacilities.Domain\obj\Debug\net6.0\FoodFacilities.Domain.AssemblyInfoInputs.cache
+D:\Projects\FoodFacilities\FoodFacilities.Domain\obj\Debug\net6.0\FoodFacilities.Domain.AssemblyInfo.cs
+D:\Projects\FoodFacilities\FoodFacilities.Domain\obj\Debug\net6.0\FoodFacilities.Domain.csproj.CoreCompileInputs.cache
+D:\Projects\FoodFacilities\FoodFacilities.Domain\obj\Debug\net6.0\FoodFacilities.Domain.dll
+D:\Projects\FoodFacilities\FoodFacilities.Domain\obj\Debug\net6.0\refint\FoodFacilities.Domain.dll
+D:\Projects\FoodFacilities\FoodFacilities.Domain\obj\Debug\net6.0\FoodFacilities.Domain.pdb
+D:\Projects\FoodFacilities\FoodFacilities.Domain\obj\Debug\net6.0\ref\FoodFacilities.Domain.dll
