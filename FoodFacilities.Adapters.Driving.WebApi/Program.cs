@@ -1,7 +1,7 @@
 using FoodFacilities.Application.Adapters.Driven.Csv;
-using FoodFacilities.Domain.Adapters.Driven;
-using FoodFacilities.Domain.Adapters.Driving.Handlers;
-using FoodFacilities.Domain.Services.Handlers;
+using FoodFacilities.Application.Services;
+using FoodFacilities.Domain.Adapters.Driven.Repositories;
+using FoodFacilities.Domain.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,7 +11,7 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 // Add services to the container.
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
-builder.Services.AddTransient<IFoodFacilityHandler, FoodFacilityHandler>();
+builder.Services.AddTransient<IFoodFacilityService, FoodFacilityService>();
 builder.Services.AddTransient<IFoodFacilityRepository, FoodFacilityCsvRepository>();
 
 builder.Services.AddControllers();

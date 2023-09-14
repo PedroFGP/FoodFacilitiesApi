@@ -15,4 +15,8 @@
     <ProjectReference Include="..\FoodFacilities.Domain\FoodFacilities.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Adapters\Driving\" />
+  </ItemGroup>
+
 </Project>

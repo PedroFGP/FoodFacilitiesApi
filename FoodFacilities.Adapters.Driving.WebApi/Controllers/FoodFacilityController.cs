@@ -1,9 +1,7 @@
 ﻿using AutoMapper;
 using FoodFacilities.Adapters.Driving.WebApi.Dtos;
-using FoodFacilities.Domain.Adapters.Driving.Handlers;
-using Microsoft.AspNetCore.Http;
+using FoodFacilities.Domain.Services;
 using Microsoft.AspNetCore.Mvc;
-using System.Net;
 using System.Net.Mime;
 
 namespace FoodFacilities.Adapters.Driving.WebApi.Controllers
@@ -14,33 +12,47 @@ namespace FoodFacilities.Adapters.Driving.WebApi.Controllers
     public class FoodFacilityController : ControllerBase
     {
         private readonly IMapper _mapper;
-        private readonly IFoodFacilityHandler _foodFacilityHandler;
+        private readonly IFoodFacilityService _foodFacilityService;
 
         public FoodFacilityController(IMapper mapper,
-            IFoodFacilityHandler foodFacilityHandler) 
+            IFoodFacilityService foodFacilityService) 
         {
             _mapper = mapper;
-            _foodFacilityHandler = foodFacilityHandler;
+            _foodFacilityService = foodFacilityService;
         }
 
-        [HttpGet("facilities")]
+        [HttpGet("facilities/applicant")]
         [ProducesResponseType(typeof(FoodFacilityDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
-        public async Task<FoodFacilityDto> GetFoodFacilitiesByApplicant([FromQuery] string ApplicantName, [FromQuery] ICollection<string> status)
+        public async Task<List<FoodFacilityDto>> GetFoodFacilitiesByApplicant([FromQuery] string applicant, [FromQuery] string[] status)
         {
-            var result = await _foodFacilityHandler.GetByApplicant(ApplicantName, status);
+            status = status.Where(x => !string.IsNullOrEmpty(x) || x != "null").ToArray();
 
-            return _mapper.Map<FoodFacilityDto>(result);
+            var result = await _foodFacilityService.GetByApplicant(applicant, status);
+
+            return _mapper.Map<List<FoodFacilityDto>>(result);
         }
 
         [HttpGet("facilities/street")]
         [ProducesResponseType(typeof(FoodFacilityDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
-        public async Task<FoodFacilityDto> GetFoodFacilitiesByStreet([FromQuery] string street)
+        public async Task<List<FoodFacilityDto>> GetFoodFacilitiesByStreet([FromQuery] string street)
         {
-            var result = await _foodFacilityHandler.GetByStreet(street);
+            var result = await _foodFacilityService.GetByStreet(street);
 
-            return _mapper.Map<FoodFacilityDto>(result);
+            return _mapper.Map<List<FoodFacilityDto>>(result);
+        }
+
+        [HttpGet("facilities/nearest")]
+        [ProducesResponseType(typeof(FoodFacilityDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
+        public async Task<List<FoodFacilityDto>> GetFoodFacilitiesByStreet([FromQuery] double latitude, [FromQuery] double longitude, [FromQuery] string[] status)
+        {
+            status = status.Where(x => !string.IsNullOrEmpty(x) || x != "null").ToArray();
+
+            var result = await _foodFacilityService.GetNearestFacilities(latitude, longitude, status);
+
+            return _mapper.Map<List<FoodFacilityDto>>(result);
         }
     }
 }

@@ -1,9 +1,12 @@
 ﻿using CsvHelper;
+using CsvHelper.Configuration;
 using FoodFacilities.Application.Adapters.Driven.Csv.Mapping;
-using FoodFacilities.Domain.Adapters.Driven;
+using FoodFacilities.Domain.Adapters.Driven.Repositories;
 using FoodFacilities.Domain.Entities;
 using Microsoft.Extensions.Configuration;
 using System.Globalization;
+using System.Linq;
+using System.Linq.Expressions;
 
 namespace FoodFacilities.Application.Adapters.Driven.Csv
 {
@@ -16,7 +19,7 @@ namespace FoodFacilities.Application.Adapters.Driven.Csv
             _configuration = configuration;
         }
 
-        public Task<ICollection<FoodFacility>> GetAsync(Func<FoodFacility, bool> filter)
+        public async Task<ICollection<FoodFacility>> GetAsync(Func<FoodFacility, bool>? filter = null)
         {
             var connectionString = _configuration["FoodFacility_ConnectionString"];
 
@@ -28,11 +31,21 @@ namespace FoodFacilities.Application.Adapters.Driven.Csv
             {
                 csv.Context.RegisterClassMap<FoodFacilityMapDefinition>();
 
-                var t = csv.GetRecords<dynamic>();
+                var facilities = new List<FoodFacility>();
+                while (await csv.ReadAsync())
+                {
+                    var record = csv.GetRecord<FoodFacility>();
 
-                var records = csv.GetRecords<FoodFacility>().Where(filter).ToList();
+                    if(record is null)
+                        continue;
 
-                return Task.FromResult<ICollection<FoodFacility>>(records);
+                    if (filter is null || filter(record))
+                    {
+                        facilities.Add(record);
+                    }
+                }
+
+                return facilities;
             }
         }
     }

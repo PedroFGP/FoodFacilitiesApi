@@ -8,5 +8,10 @@ namespace FoodFacilities.Domain.Enums
 {
     public enum EnFoodFacilityStatus
     {
+        Approved,
+        Expired,
+        Issued,
+        Requested,
+        Suspend
     }
 }
