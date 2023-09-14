@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="..\build\FoodFacilities.Adapters.Driving.WebApi.props" />
-</Project>
