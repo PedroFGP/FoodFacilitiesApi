@@ -3,6 +3,7 @@ using FoodFacilities.Domain.Entities;
 using FoodFacilities.Domain.Exceptions;
 using FoodFacilities.Domain.Services;
 using FoodFacilities.Domain.Utils;
+using System.IO;
 
 namespace FoodFacilities.Application.Services
 {
@@ -17,51 +18,61 @@ namespace FoodFacilities.Application.Services
             _foodFacilityRepository = foodFacilityRepository;
         }
 
-        public async Task<ICollection<FoodFacility>> GetByApplicant(string applicant, string[]? filterStatus = null)
+        public async Task<ICollection<FoodFacility>> GetByApplicantAsync(string applicant, string[]? filterStatus = null)
         {
-            string[]? sanitizedStatus = null;
+            if (filterStatus is not null && !filterStatus.All(x => ValidStatus.Contains(x)))
+                throw new FoodFacilityInvalidFilterException($"Invalid food facility status. Allowed values are: {string.Join(',', ValidStatus)}.");
 
-            if (filterStatus is not null && filterStatus.Any())
-                sanitizedStatus = SanitizeStatus(filterStatus);
+            if (string.IsNullOrEmpty(applicant))
+                throw new FoodFacilityInvalidFilterException($"Food facility applicant filter cannot be null nor empty.");
 
             var facilities = await _foodFacilityRepository.GetAsync(x =>
-                x.Applicant == applicant
+                x.Applicant is not null 
+                && 
+                x.Applicant.ToLower() == applicant.ToLower()
                 &&
                 (
-                    sanitizedStatus is null 
+                    filterStatus is null 
                     || 
-                    !sanitizedStatus.Any()
+                    !filterStatus.Any()
                     ||
-                    x.Status is not null && sanitizedStatus.Contains(x.Status.ToUpper())
+                    x.Status is not null && filterStatus.Contains(x.Status.ToUpper())
                 )
             );
 
             if (!facilities.Any())
-                throw new NoFoodFacilityFoundException();
+                throw new FoodFacilityNotFoundException("No food facility found for the given applicant.");
 
             return facilities;
         }
 
-        public async Task<ICollection<FoodFacility>> GetByStreet(string street)
+        public async Task<ICollection<FoodFacility>> GetByStreetAsync(string street)
         {
+            if (string.IsNullOrEmpty(street))
+                throw new FoodFacilityInvalidFilterException($"Food facility street filter cannot be null nor empty.");
+
             var facilities = await _foodFacilityRepository.GetAsync(x =>
                 x.Address is not null && x.Address.ToLower().Contains(street.ToLower())
             );
 
             if (!facilities.Any())
-                throw new NoFoodFacilityFoundException();
+                throw new FoodFacilityNotFoundException("No food facility found for the given street.");
 
             return facilities;
         }
 
-        public async Task<ICollection<FoodFacility>> GetNearestFacilities(double latitude, double longitude, string[]? filterStatus = null)
+        public async Task<ICollection<FoodFacility>> GetNearestFacilitiesAsync(double? latitude, double? longitude, string[]? filterStatus = null)
         {
+            if (!latitude.HasValue || !longitude.HasValue)
+                throw new FoodFacilityInvalidFilterException($"Food facility latitude/longitude filter cannot be null.");
+
             Func<FoodFacility, bool>? filter;
 
-            if(filterStatus is not null && filterStatus.Any())
-            {
-                filterStatus = SanitizeStatus(filterStatus);
+            if (filterStatus is not null && !filterStatus.All(x => ValidStatus.Contains(x)))
+                throw new FoodFacilityInvalidFilterException($"Invalid food facility status. Allowed values are: {string.Join(',', ValidStatus)}");
 
+            if (filterStatus is not null && filterStatus.Any())
+            {
                 filter = x => x.Status is not null && filterStatus.Contains(x.Status.ToUpper());
             }
             else
@@ -78,7 +89,7 @@ namespace FoodFacilities.Application.Services
                 if (!facility.Latitude.HasValue || !facility.Longitude.HasValue || facility.Latitude.Value == 0.0f || facility.Longitude.Value == 0.0f)
                     continue;
 
-                facilitiesDistance[facility.Id] = LocationUtils.CalculateDistance(latitude, longitude, facility.Latitude.Value, facility.Longitude.Value);
+                facilitiesDistance[facility.Id] = LocationUtils.CalculateDistance(latitude.Value, longitude.Value, facility.Latitude.Value, facility.Longitude.Value);
             }
 
             var nearestFailicitesIds = facilitiesDistance.OrderBy(x => x.Value).Take(5).Select(x => x.Key);
@@ -86,14 +97,9 @@ namespace FoodFacilities.Application.Services
             var nearestFailicites = facilities.Where(x => nearestFailicitesIds.Contains(x.Id)).ToList();
 
             if (!nearestFailicites.Any())
-                throw new NoFoodFacilityFoundException();
+                throw new FoodFacilityNotFoundException("No food facility found for the given latitude/longitude.");
 
             return nearestFailicites;
-        }
-
-        private string[] SanitizeStatus(string[] status)
-        {
-            return status.Select(s => s.ToUpper()).Where(s => ValidStatus.Contains(s)).ToArray();
         }
     }
 }

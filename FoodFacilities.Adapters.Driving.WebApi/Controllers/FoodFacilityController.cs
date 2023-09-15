@@ -24,11 +24,9 @@ namespace FoodFacilities.Adapters.Driving.WebApi.Controllers
         [HttpGet("facilities/applicant")]
         [ProducesResponseType(typeof(FoodFacilityDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
-        public async Task<List<FoodFacilityDto>> GetFoodFacilitiesByApplicant([FromQuery] string applicant, [FromQuery] string[] status)
+        public async Task<List<FoodFacilityDto>> GetFoodFacilitiesByApplicantAsync([FromQuery] string applicant, [FromQuery] string[]? status)
         {
-            status = status.Where(x => !string.IsNullOrEmpty(x) || x != "null").ToArray();
-
-            var result = await _foodFacilityService.GetByApplicant(applicant, status);
+            var result = await _foodFacilityService.GetByApplicantAsync(applicant, status);
 
             return _mapper.Map<List<FoodFacilityDto>>(result);
         }
@@ -36,9 +34,9 @@ namespace FoodFacilities.Adapters.Driving.WebApi.Controllers
         [HttpGet("facilities/street")]
         [ProducesResponseType(typeof(FoodFacilityDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
-        public async Task<List<FoodFacilityDto>> GetFoodFacilitiesByStreet([FromQuery] string street)
+        public async Task<List<FoodFacilityDto>> GetFoodFacilitiesByStreetAsync([FromQuery] string street)
         {
-            var result = await _foodFacilityService.GetByStreet(street);
+            var result = await _foodFacilityService.GetByStreetAsync(street);
 
             return _mapper.Map<List<FoodFacilityDto>>(result);
         }
@@ -46,11 +44,9 @@ namespace FoodFacilities.Adapters.Driving.WebApi.Controllers
         [HttpGet("facilities/nearest")]
         [ProducesResponseType(typeof(FoodFacilityDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
-        public async Task<List<FoodFacilityDto>> GetFoodFacilitiesByStreet([FromQuery] double latitude, [FromQuery] double longitude, [FromQuery] string[] status)
+        public async Task<List<FoodFacilityDto>> GetNearestFoodFacilitiesByGeolocationAsync([FromQuery] double? latitude, [FromQuery] double? longitude, [FromQuery] string[]? status)
         {
-            status = status.Where(x => !string.IsNullOrEmpty(x) || x != "null").ToArray();
-
-            var result = await _foodFacilityService.GetNearestFacilities(latitude, longitude, status);
+            var result = await _foodFacilityService.GetNearestFacilitiesAsync(latitude, longitude, status);
 
             return _mapper.Map<List<FoodFacilityDto>>(result);
         }

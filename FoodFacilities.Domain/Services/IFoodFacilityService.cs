@@ -5,10 +5,10 @@ namespace FoodFacilities.Domain.Services
 {
     public interface IFoodFacilityService
     {
-        Task<ICollection<FoodFacility>> GetByApplicant(string applicant, string[]? filterStatus = null);
+        Task<ICollection<FoodFacility>> GetByApplicantAsync(string applicant, string[]? filterStatus = null);
 
-        Task<ICollection<FoodFacility>> GetByStreet(string street);
+        Task<ICollection<FoodFacility>> GetByStreetAsync(string street);
 
-        Task<ICollection<FoodFacility>> GetNearestFacilities(double latitude, double longitude, string[]? filterStatus = null);
+        Task<ICollection<FoodFacility>> GetNearestFacilitiesAsync(double? latitude, double? longitude, string[]? filterStatus = null);
     }
 }
