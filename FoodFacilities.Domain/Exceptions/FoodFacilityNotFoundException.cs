@@ -7,10 +7,8 @@ using System.Threading.Tasks;
 
 namespace FoodFacilities.Domain.Exceptions
 {
-    public class FoodFacilityNotFoundException : Exception
+    public class FoodFacilityNotFoundException : FoodFacilityBaseException
     {
-        public HttpStatusCode StatusCode { get; init; } = HttpStatusCode.NotFound;
-
-        public FoodFacilityNotFoundException(string message) : base(message) {}
+        public FoodFacilityNotFoundException(string message) : base(HttpStatusCode.NotFound, message) {}
     }
 }

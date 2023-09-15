@@ -7,10 +7,8 @@ using System.Threading.Tasks;
 
 namespace FoodFacilities.Domain.Exceptions
 {
-    public class FoodFacilityInvalidFilterException : Exception
+    public class FoodFacilityInvalidFilterException : FoodFacilityBaseException
     {
-        public HttpStatusCode StatusCode { get; init; } = HttpStatusCode.BadRequest;
-
-        public FoodFacilityInvalidFilterException(string message) : base(message) { }
+        public FoodFacilityInvalidFilterException(string message) : base(HttpStatusCode.BadRequest, message) { }
     }
 }
