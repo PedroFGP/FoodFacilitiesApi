@@ -39,7 +39,7 @@ namespace FoodFacilities.Test
         {
             var foodFacilitiesData = GetFoodFacilitiesData();
 
-            var filteredFacilities = foodFacilitiesData.Where(x => x.Applicant.ToLower() == applicant).ToList();
+            var filteredFacilities = foodFacilitiesData.Where(x => x.Applicant is not null && x.Applicant.ToLower() == applicant).ToList();
 
             _mockFoodFacilityService.Setup(x => x.GetByApplicantAsync(applicant, status).Result).Returns(filteredFacilities);
 
@@ -63,7 +63,7 @@ namespace FoodFacilities.Test
         {
             var foodFacilitiesData = GetFoodFacilitiesData();
 
-            var filteredFacilities = foodFacilitiesData.Where(x => x.Applicant.ToLower() == applicant && status is not null && status.Contains(x.Status.ToUpper())).ToList();
+            var filteredFacilities = foodFacilitiesData.Where(x => x.Applicant is not null && x.Applicant.ToLower() == applicant && status is not null && x.Status is not null && status.Contains(x.Status.ToUpper())).ToList();
 
             _mockFoodFacilityService.Setup(x => x.GetByApplicantAsync(applicant, status).Result).Returns(filteredFacilities);
 
@@ -138,7 +138,7 @@ namespace FoodFacilities.Test
         {
             var foodFacilitiesData = GetFoodFacilitiesData();
 
-            var filteredFacilities = foodFacilitiesData.Where(x => x.Address.ToLower().Contains(street.ToLower())).ToList();
+            var filteredFacilities = foodFacilitiesData.Where(x => x.Address is not null && x.Address.ToLower().Contains(street.ToLower())).ToList();
 
             _mockFoodFacilityService.Setup(x => x.GetByStreetAsync(street).Result).Returns(filteredFacilities);
 
@@ -190,11 +190,11 @@ namespace FoodFacilities.Test
 
             var filteredFacilities = GetNearestFacilities(foodFacilitiesData, latitude, longitude);
 
-            _mockFoodFacilityService.Setup(x => x.GetNearestFacilitiesAsync(latitude, longitude, status).Result).Returns(filteredFacilities);
+            _mockFoodFacilityService.Setup(x => x.GetNearestFoodTruckFacilitiesAsync(latitude, longitude, status).Result).Returns(filteredFacilities);
 
             var foodFacilityController = new FoodFacilityController(_mockMapper, _mockFoodFacilityService.Object);
 
-            var foodFacilitiesResult = foodFacilityController.GetNearestFoodFacilitiesByGeolocationAsync(latitude, longitude, status).Result;
+            var foodFacilitiesResult = foodFacilityController.GetNearestFoodTruckFacilitiesByGeolocationAsync(latitude, longitude, status).Result;
 
             Assert.NotNull(foodFacilitiesResult);
             Assert.Equal(filteredFacilities.Count(), foodFacilitiesResult.Count());
@@ -211,11 +211,11 @@ namespace FoodFacilities.Test
 
             var filteredFacilities = GetNearestFacilities(foodFacilitiesData, latitude, longitude);
 
-            _mockFoodFacilityService.Setup(x => x.GetNearestFacilitiesAsync(latitude, longitude, status).Result).Returns(filteredFacilities);
+            _mockFoodFacilityService.Setup(x => x.GetNearestFoodTruckFacilitiesAsync(latitude, longitude, status).Result).Returns(filteredFacilities);
 
             var foodFacilityController = new FoodFacilityController(_mockMapper, _mockFoodFacilityService.Object);
 
-            var foodFacilitiesResult = foodFacilityController.GetNearestFoodFacilitiesByGeolocationAsync(latitude, longitude, status).Result;
+            var foodFacilitiesResult = foodFacilityController.GetNearestFoodTruckFacilitiesByGeolocationAsync(latitude, longitude, status).Result;
 
             Assert.NotNull(foodFacilitiesResult);
             Assert.Equal(filteredFacilities.Count(), foodFacilitiesResult.Count());
@@ -228,11 +228,11 @@ namespace FoodFacilities.Test
         [InlineData(37.78127595, -122.4318404, new string[] { "SUSPEND" })]
         public void FoodFacilityGetNearestFacilitiesFailNotFound(double? latitude, double? longitude, string[]? status)
         {
-            _mockFoodFacilityService.Setup(x => x.GetNearestFacilitiesAsync(latitude, longitude, status).Result);
+            _mockFoodFacilityService.Setup(x => x.GetNearestFoodTruckFacilitiesAsync(latitude, longitude, status).Result);
 
             var foodFacilityController = new FoodFacilityController(_mockMapper, _mockFoodFacilityService.Object);
 
-            Assert.ThrowsAsync<FoodFacilityNotFoundException>(() => foodFacilityController.GetNearestFoodFacilitiesByGeolocationAsync(latitude, longitude, status));
+            Assert.ThrowsAsync<FoodFacilityNotFoundException>(() => foodFacilityController.GetNearestFoodTruckFacilitiesByGeolocationAsync(latitude, longitude, status));
         }
 
         [Theory]
@@ -244,11 +244,11 @@ namespace FoodFacilities.Test
         [InlineData(null, null, new string[] { "APPROVED", "EXPIRED" })]
         public void FoodFacilityGetNearestFacilitiesFailInvalidFilter(double? latitude, double? longitude, string[]? status)
         {
-            _mockFoodFacilityService.Setup(x => x.GetNearestFacilitiesAsync(latitude, longitude, status).Result);
+            _mockFoodFacilityService.Setup(x => x.GetNearestFoodTruckFacilitiesAsync(latitude, longitude, status).Result);
 
             var foodFacilityController = new FoodFacilityController(_mockMapper, _mockFoodFacilityService.Object);
 
-            Assert.ThrowsAsync<FoodFacilityNotFoundException>(() => foodFacilityController.GetNearestFoodFacilitiesByGeolocationAsync(latitude, longitude, status));
+            Assert.ThrowsAsync<FoodFacilityNotFoundException>(() => foodFacilityController.GetNearestFoodTruckFacilitiesByGeolocationAsync(latitude, longitude, status));
         }
 
         #endregion
@@ -266,7 +266,8 @@ namespace FoodFacilities.Test
                     Address = "211 SANFORD ST",
                     Status = "APPROVED",
                     Latitude = 37.79238986,
-                    Longitude = -122.4012697
+                    Longitude = -122.4012697,
+                    FacilityType = "Truck"
                 },
                 new FoodFacility
                 {
@@ -275,7 +276,8 @@ namespace FoodFacilities.Test
                     Address = "1265 GROVE ST",
                     Status = "APPROVED",
                     Latitude = 37.794,
-                    Longitude = -122.4013
+                    Longitude = -122.4013,
+                    FacilityType = "Truck"
                 },
                 new FoodFacility
                 {
@@ -284,7 +286,8 @@ namespace FoodFacilities.Test
                     Address = "15 MARINA BLVD",
                     Status = "REQUESTED",
                     Latitude = 37.78484603,
-                    Longitude = -122.4225681
+                    Longitude = -122.4225681,
+                    FacilityType = "Truck"
                 },
                 new FoodFacility
                 {
@@ -293,7 +296,8 @@ namespace FoodFacilities.Test
                     Address = "1188 FRANKLIN ST",
                     Status = "APPROVED",
                     Latitude = 37.73911143,
-                    Longitude = -122.382465
+                    Longitude = -122.382465,
+                    FacilityType = "Truck"
                 },
                 new FoodFacility
                 {
@@ -302,7 +306,8 @@ namespace FoodFacilities.Test
                     Address = "2111 FRANKLIN ST",
                     Status = "REQUESTED",
                     Latitude = 37.73911148,
-                    Longitude = -122.382466
+                    Longitude = -122.382466,
+                    FacilityType = "Truck"
                 },
                 new FoodFacility
                 {
@@ -311,7 +316,8 @@ namespace FoodFacilities.Test
                     Address = "90 BROADWAY",
                     Status = "EXPIRED",
                     Latitude = 37.77522831,
-                    Longitude = -122.4174661
+                    Longitude = -122.4174661,
+                    FacilityType = "Truck"
                 },
                 new FoodFacility
                 {
@@ -320,7 +326,8 @@ namespace FoodFacilities.Test
                     Address = "251 GEARY ST",
                     Status = "ISSUED",
                     Latitude = 37.78127595,
-                    Longitude = -122.4318404
+                    Longitude = -122.4318404,
+                    FacilityType = "Push Cart"
                 },
                 new FoodFacility
                 {
@@ -329,7 +336,8 @@ namespace FoodFacilities.Test
                     Address = "1420 YOSEMITE AVE",
                     Status = "ISSUED",
                     Latitude = 37.78127575,
-                    Longitude = -122.4318414
+                    Longitude = -122.4318414,
+                    FacilityType = "Push Cart"
                 }
             };
 

@@ -41,12 +41,12 @@ namespace FoodFacilities.Adapters.Driving.WebApi.Controllers
             return _mapper.Map<List<FoodFacilityDto>>(result);
         }
 
-        [HttpGet("facilities/nearest")]
+        [HttpGet("facilities/nearest-food-trucks")]
         [ProducesResponseType(typeof(FoodFacilityDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
-        public async Task<List<FoodFacilityDto>> GetNearestFoodFacilitiesByGeolocationAsync([FromQuery] double? latitude, [FromQuery] double? longitude, [FromQuery] string[]? status)
+        public async Task<List<FoodFacilityDto>> GetNearestFoodTruckFacilitiesByGeolocationAsync([FromQuery] double? latitude, [FromQuery] double? longitude, [FromQuery] string[]? status)
         {
-            var result = await _foodFacilityService.GetNearestFacilitiesAsync(latitude, longitude, status);
+            var result = await _foodFacilityService.GetNearestFoodTruckFacilitiesAsync(latitude, longitude, status);
 
             return _mapper.Map<List<FoodFacilityDto>>(result);
         }

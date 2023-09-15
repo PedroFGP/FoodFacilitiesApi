@@ -9,6 +9,6 @@ namespace FoodFacilities.Domain.Services
 
         Task<ICollection<FoodFacility>> GetByStreetAsync(string street);
 
-        Task<ICollection<FoodFacility>> GetNearestFacilitiesAsync(double? latitude, double? longitude, string[]? filterStatus = null);
+        Task<ICollection<FoodFacility>> GetNearestFoodTruckFacilitiesAsync(double? latitude, double? longitude, string[]? filterStatus = null);
     }
 }

@@ -61,24 +61,29 @@ namespace FoodFacilities.Application.Services
             return facilities;
         }
 
-        public async Task<ICollection<FoodFacility>> GetNearestFacilitiesAsync(double? latitude, double? longitude, string[]? filterStatus = null)
+        public async Task<ICollection<FoodFacility>> GetNearestFoodTruckFacilitiesAsync(double? latitude, double? longitude, string[]? filterStatus = null)
         {
             if (!latitude.HasValue || !longitude.HasValue)
                 throw new FoodFacilityInvalidFilterException($"Food facility latitude/longitude filter cannot be null.");
 
-            Func<FoodFacility, bool>? filter;
-
             if (filterStatus is not null && !filterStatus.All(x => ValidStatus.Contains(x)))
                 throw new FoodFacilityInvalidFilterException($"Invalid food facility status. Allowed values are: {string.Join(',', ValidStatus)}");
 
+            var filters = new List<Predicate<FoodFacility>>
+            {
+                x => x.FacilityType is not null && x.FacilityType == "Truck"
+            };
+
             if (filterStatus is not null && filterStatus.Any())
             {
-                filter = x => x.Status is not null && filterStatus.Contains(x.Status.ToUpper());
+                filters.Add(x => x.Status is not null && filterStatus.Contains(x.Status.ToUpper()));
             }
             else
             {
-                filter = x => x.Status is not null && x.Status.ToUpper() == "APPROVED";
+                filters.Add(x => x.Status is not null && x.Status.ToUpper() == "APPROVED");
             }
+
+            Func<FoodFacility, bool>? filter = x => filters.All(filter => filter(x));
 
             var facilities = await _foodFacilityRepository.GetAsync(filter);
 
