@@ -1,12 +1,15 @@
 using AutoMapper;
+using Castle.Core.Configuration;
 using FoodFacilities.Adapters.Driving.WebApi.Controllers;
 using FoodFacilities.Adapters.Driving.WebApi.Dtos;
 using FoodFacilities.Adapters.Driving.WebApi.Mapping;
+using FoodFacilities.Application.Services;
 using FoodFacilities.Domain.Adapters.Driven.Repositories;
 using FoodFacilities.Domain.Entities;
 using FoodFacilities.Domain.Exceptions;
 using FoodFacilities.Domain.Services;
 using FoodFacilities.Domain.Utils;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using System.IO;
@@ -16,12 +19,12 @@ namespace FoodFacilities.Test
 {
     public class FoodFacilityControllerTest
     {
-        private readonly Mock<IFoodFacilityService> _mockFoodFacilityService;
+        private readonly Mock<IFoodFacilityRepository> _mockFoodFacilityRepository;
         private readonly IMapper _mockMapper;
 
         public FoodFacilityControllerTest()
         {
-            _mockFoodFacilityService = new Mock<IFoodFacilityService>();
+            _mockFoodFacilityRepository = new Mock<IFoodFacilityRepository>();
 
             var mockMapper = new MapperConfiguration(cfg =>
             {
@@ -39,44 +42,46 @@ namespace FoodFacilities.Test
         [InlineData("Brazuca Grill", null)]
         public void FoodFacilityGetByApplicantSuccessWithoutStatus(string applicant, string[]? status)
         {
-            var foodFacilitiesData = GetFoodFacilitiesData();
+            var filteredFacilities = GetFoodFacilitiesData().Where(x => x.Applicant is not null && x.Applicant.ToLower() == applicant.ToLower()).ToList();
 
-            var filteredFacilities = foodFacilitiesData.Where(x => x.Applicant is not null && x.Applicant.ToLower() == applicant).ToList();
+            _mockFoodFacilityRepository.Setup(x => x.GetAsync(It.IsAny<Func<FoodFacility, bool>>())).ReturnsAsync(filteredFacilities);
 
-            _mockFoodFacilityService.Setup(x => x.GetByApplicantAsync(applicant, status).Result).Returns(filteredFacilities);
+            var mockFoodFacilityService = new FoodFacilityService(_mockFoodFacilityRepository.Object);
 
-            var foodFacilityController = new FoodFacilityController(_mockMapper, _mockFoodFacilityService.Object);
+            var foodFacilityController = new FoodFacilityController(_mockMapper, mockFoodFacilityService);
 
             var foodFacilitiesActionResult = foodFacilityController.GetFoodFacilitiesByApplicantAsync(applicant, status).Result as ObjectResult;
 
             var foodFacilitiesResult = foodFacilitiesActionResult?.Value as List<FoodFacilityDto>;
 
+            Assert.Equal(StatusCodes.Status200OK, foodFacilitiesActionResult?.StatusCode);
             Assert.NotNull(foodFacilitiesResult);
             Assert.Equal(filteredFacilities.Count(), foodFacilitiesResult.Count());
             Assert.Equal(filteredFacilities.Select(x => x.Id), foodFacilitiesResult.Select(x => x.Id));
         }
 
         [Theory]
-        [InlineData("Donavan Fletcher Truck", new string[] {"APPROVED"})]
+        [InlineData("Donavan Fletcher Truck", new string[] { "APPROVED" })]
         [InlineData("Break Break", new string[] { "APPROVED" })]
         [InlineData("Break Break", new string[] { "APPROVED", "REQUESTED" })]
         [InlineData("Brazuca Grill", new string[] { "EXPIRED" })]
         [InlineData("Natan's Catering", new string[] { "ISSUED" })]
-        [InlineData("Red Lobster", new string[] { "SUSPEND" })]
+        [InlineData("Red Lobster", new string[] { "ISSUED" })]
         public void FoodFacilityGetByApplicantSuccessWithtStatus(string applicant, string[]? status)
         {
-            var foodFacilitiesData = GetFoodFacilitiesData();
+            var filteredFacilities = GetFoodFacilitiesData().Where(x => x.Applicant is not null && x.Applicant.ToLower() == applicant.ToLower() && status is not null && x.Status is not null && status.Contains(x.Status.ToUpper())).ToList();
 
-            var filteredFacilities = foodFacilitiesData.Where(x => x.Applicant is not null && x.Applicant.ToLower() == applicant && status is not null && x.Status is not null && status.Contains(x.Status.ToUpper())).ToList();
+            _mockFoodFacilityRepository.Setup(x => x.GetAsync(It.IsAny<Func<FoodFacility, bool>>())).ReturnsAsync(filteredFacilities);
 
-            _mockFoodFacilityService.Setup(x => x.GetByApplicantAsync(applicant, status).Result).Returns(filteredFacilities);
+            var mockFoodFacilityService = new FoodFacilityService(_mockFoodFacilityRepository.Object);
 
-            var foodFacilityController = new FoodFacilityController(_mockMapper, _mockFoodFacilityService.Object);
+            var foodFacilityController = new FoodFacilityController(_mockMapper, mockFoodFacilityService);
 
             var foodFacilitiesActionResult = foodFacilityController.GetFoodFacilitiesByApplicantAsync(applicant, status).Result as ObjectResult;
 
             var foodFacilitiesResult = foodFacilitiesActionResult?.Value as List<FoodFacilityDto>;
 
+            Assert.Equal(StatusCodes.Status200OK, foodFacilitiesActionResult?.StatusCode);
             Assert.NotNull(foodFacilitiesResult);
             Assert.Equal(filteredFacilities.Count(), foodFacilitiesResult.Count());
             Assert.Equal(filteredFacilities.Select(x => x.Id), foodFacilitiesResult.Select(x => x.Id));
@@ -88,11 +93,15 @@ namespace FoodFacilities.Test
         [InlineData("Henrico's Pizza")]
         public void FoodFacilityGetByApplicantFailNotFoundWithoutStatus(string applicant)
         {
-            _mockFoodFacilityService.Setup(x => x.GetByApplicantAsync(applicant, null).Result);
+            _mockFoodFacilityRepository.Setup(x => x.GetAsync(It.IsAny<Func<FoodFacility, bool>>())).ReturnsAsync(new List<FoodFacility>());
 
-            var foodFacilityController = new FoodFacilityController(_mockMapper, _mockFoodFacilityService.Object);
+            var mockFoodFacilityService = new FoodFacilityService(_mockFoodFacilityRepository.Object);
 
-            Assert.ThrowsAsync<FoodFacilityNotFoundException>(() => foodFacilityController.GetFoodFacilitiesByApplicantAsync(applicant, null));
+            var foodFacilityController = new FoodFacilityController(_mockMapper, mockFoodFacilityService);
+
+            var foodFacilitiesActionResult = foodFacilityController.GetFoodFacilitiesByApplicantAsync(applicant, null).Result as ObjectResult;
+
+            Assert.Equal(StatusCodes.Status404NotFound, foodFacilitiesActionResult?.StatusCode);
         }
 
         [Theory]
@@ -101,11 +110,15 @@ namespace FoodFacilities.Test
         [InlineData("Henrico's Pizza", new string[] { "SUSPEND" })]
         public void FoodFacilityGetByApplicantFailNotFoundWithStatus(string applicant, string[]? status)
         {
-            _mockFoodFacilityService.Setup(x => x.GetByApplicantAsync(applicant, status).Result);
+            _mockFoodFacilityRepository.Setup(x => x.GetAsync(It.IsAny<Func<FoodFacility, bool>>())).ReturnsAsync(new List<FoodFacility>());
 
-            var foodFacilityController = new FoodFacilityController(_mockMapper, _mockFoodFacilityService.Object);
+            var mockFoodFacilityService = new FoodFacilityService(_mockFoodFacilityRepository.Object);
 
-            Assert.ThrowsAsync<FoodFacilityNotFoundException>(() => foodFacilityController.GetFoodFacilitiesByApplicantAsync(applicant, status));
+            var foodFacilityController = new FoodFacilityController(_mockMapper, mockFoodFacilityService);
+
+            var foodFacilitiesActionResult = foodFacilityController.GetFoodFacilitiesByApplicantAsync(applicant, status).Result as ObjectResult;
+
+            Assert.Equal(StatusCodes.Status404NotFound, foodFacilitiesActionResult?.StatusCode);
         }
 
         [Theory]
@@ -113,11 +126,15 @@ namespace FoodFacilities.Test
         [InlineData(null)]
         public void FoodFacilityGetByApplicantFailInvalidFilterWithoutStatus(string applicant)
         {
-            _mockFoodFacilityService.Setup(x => x.GetByApplicantAsync(applicant, null).Result);
+            _mockFoodFacilityRepository.Setup(x => x.GetAsync(It.IsAny<Func<FoodFacility, bool>>())).ReturnsAsync(new List<FoodFacility>());
 
-            var foodFacilityController = new FoodFacilityController(_mockMapper, _mockFoodFacilityService.Object);
+            var mockFoodFacilityService = new FoodFacilityService(_mockFoodFacilityRepository.Object);
 
-            Assert.ThrowsAsync<FoodFacilityInvalidFilterException>(() => foodFacilityController.GetFoodFacilitiesByApplicantAsync(applicant, null));
+            var foodFacilityController = new FoodFacilityController(_mockMapper, mockFoodFacilityService);
+
+            var foodFacilitiesActionResult = foodFacilityController.GetFoodFacilitiesByApplicantAsync(applicant, null).Result as ObjectResult;
+
+            Assert.Equal(StatusCodes.Status400BadRequest, foodFacilitiesActionResult?.StatusCode);
         }
 
         [Theory]
@@ -125,11 +142,15 @@ namespace FoodFacilities.Test
         [InlineData(null, new string[] { "APPROVED" })]
         public void FoodFacilityGetByApplicantFailInvalidFilterWithStatus(string applicant, string[]? status)
         {
-            _mockFoodFacilityService.Setup(x => x.GetByApplicantAsync(applicant, status).Result);
+            _mockFoodFacilityRepository.Setup(x => x.GetAsync(It.IsAny<Func<FoodFacility, bool>>())).ReturnsAsync(new List<FoodFacility>());
 
-            var foodFacilityController = new FoodFacilityController(_mockMapper, _mockFoodFacilityService.Object);
+            var mockFoodFacilityService = new FoodFacilityService(_mockFoodFacilityRepository.Object);
 
-            Assert.ThrowsAsync<FoodFacilityInvalidFilterException>(() => foodFacilityController.GetFoodFacilitiesByApplicantAsync(applicant, status));
+            var foodFacilityController = new FoodFacilityController(_mockMapper, mockFoodFacilityService);
+
+            var foodFacilitiesActionResult = foodFacilityController.GetFoodFacilitiesByApplicantAsync(applicant, status).Result as ObjectResult;
+
+            Assert.Equal(StatusCodes.Status400BadRequest, foodFacilitiesActionResult?.StatusCode);
         }
 
         #endregion
@@ -139,21 +160,22 @@ namespace FoodFacilities.Test
         [Theory]
         [InlineData("MAR")]
         [InlineData("FRANK")]
-        [InlineData("GROO")]
+        [InlineData("GROV")]
         public void FoodFacilityGetByStreetSuccess(string street)
         {
-            var foodFacilitiesData = GetFoodFacilitiesData();
+            var filteredFacilities = GetFoodFacilitiesData().Where(x => x.Address is not null && x.Address.ToLower().Contains(street.ToLower())).ToList();
 
-            var filteredFacilities = foodFacilitiesData.Where(x => x.Address is not null && x.Address.ToLower().Contains(street.ToLower())).ToList();
+            _mockFoodFacilityRepository.Setup(x => x.GetAsync(It.IsAny<Func<FoodFacility, bool>>())).ReturnsAsync(filteredFacilities);
 
-            _mockFoodFacilityService.Setup(x => x.GetByStreetAsync(street).Result).Returns(filteredFacilities);
+            var mockFoodFacilityService = new FoodFacilityService(_mockFoodFacilityRepository.Object);
 
-            var foodFacilityController = new FoodFacilityController(_mockMapper, _mockFoodFacilityService.Object);
+            var foodFacilityController = new FoodFacilityController(_mockMapper, mockFoodFacilityService);
 
             var foodFacilitiesActionResult = foodFacilityController.GetFoodFacilitiesByStreetAsync(street).Result as ObjectResult;
 
             var foodFacilitiesResult = foodFacilitiesActionResult?.Value as List<FoodFacilityDto>;
 
+            Assert.Equal(StatusCodes.Status200OK, foodFacilitiesActionResult?.StatusCode);
             Assert.NotNull(foodFacilitiesResult);
             Assert.Equal(filteredFacilities.Count(), foodFacilitiesResult.Count());
             Assert.Equal(filteredFacilities.Select(x => x.Id), foodFacilitiesResult.Select(x => x.Id));
@@ -165,11 +187,15 @@ namespace FoodFacilities.Test
         [InlineData("CONTOR")]
         public void FoodFacilityGetByStreetFailNotFound(string street)
         {
-            _mockFoodFacilityService.Setup(x => x.GetByStreetAsync(street).Result);
+            _mockFoodFacilityRepository.Setup(x => x.GetAsync(It.IsAny<Func<FoodFacility, bool>>())).ReturnsAsync(new List<FoodFacility>());
 
-            var foodFacilityController = new FoodFacilityController(_mockMapper, _mockFoodFacilityService.Object);
+            var mockFoodFacilityService = new FoodFacilityService(_mockFoodFacilityRepository.Object);
 
-            Assert.ThrowsAsync<FoodFacilityNotFoundException>(() => foodFacilityController.GetFoodFacilitiesByStreetAsync(street));
+            var foodFacilityController = new FoodFacilityController(_mockMapper, mockFoodFacilityService);
+
+            var foodFacilitiesActionResult = foodFacilityController.GetFoodFacilitiesByStreetAsync(street).Result as ObjectResult;
+
+            Assert.Equal(StatusCodes.Status404NotFound, foodFacilitiesActionResult?.StatusCode);
         }
 
         [Theory]
@@ -177,35 +203,40 @@ namespace FoodFacilities.Test
         [InlineData(null)]
         public void FoodFacilityGetByStreetFailInvalidFilter(string street)
         {
-            _mockFoodFacilityService.Setup(x => x.GetByStreetAsync(street).Result);
+            _mockFoodFacilityRepository.Setup(x => x.GetAsync(It.IsAny<Func<FoodFacility, bool>>())).ReturnsAsync(new List<FoodFacility>());
 
-            var foodFacilityController = new FoodFacilityController(_mockMapper, _mockFoodFacilityService.Object);
+            var mockFoodFacilityService = new FoodFacilityService(_mockFoodFacilityRepository.Object);
 
-            Assert.ThrowsAsync<FoodFacilityInvalidFilterException>(() => foodFacilityController.GetFoodFacilitiesByStreetAsync(street));
+            var foodFacilityController = new FoodFacilityController(_mockMapper, mockFoodFacilityService);
+
+            var foodFacilitiesActionResult = foodFacilityController.GetFoodFacilitiesByStreetAsync(street).Result as ObjectResult;
+
+            Assert.Equal(StatusCodes.Status400BadRequest, foodFacilitiesActionResult?.StatusCode);
         }
 
         #endregion
 
         #region GetNearestFoodFacilitiesByGeolocationAsync Tests
-        
+
         [Theory]
         [InlineData(37.79238985, -122.4012698, null)]
         [InlineData(37.73911140, -122.382469, null)]
         [InlineData(37.78127595, -122.4318404, null)]
         public void FoodFacilityGetNearestFacilitiesSuccessWithoutStatus(double? latitude, double? longitude, string[]? status)
         {
-            var foodFacilitiesData = GetFoodFacilitiesData();
+            var filteredFacilities = GetNearestFacilities(GetFoodFacilitiesData(), latitude, longitude);
 
-            var filteredFacilities = GetNearestFacilities(foodFacilitiesData, latitude, longitude);
+            _mockFoodFacilityRepository.Setup(x => x.GetAsync(It.IsAny<Func<FoodFacility, bool>>())).ReturnsAsync(filteredFacilities);
 
-            _mockFoodFacilityService.Setup(x => x.GetNearestFoodTruckFacilitiesAsync(latitude, longitude, status).Result).Returns(filteredFacilities);
+            var mockFoodFacilityService = new FoodFacilityService(_mockFoodFacilityRepository.Object);
 
-            var foodFacilityController = new FoodFacilityController(_mockMapper, _mockFoodFacilityService.Object);
+            var foodFacilityController = new FoodFacilityController(_mockMapper, mockFoodFacilityService);
 
             var foodFacilitiesActionResult = foodFacilityController.GetNearestFoodTruckFacilitiesByGeolocationAsync(latitude, longitude, status).Result as ObjectResult;
 
             var foodFacilitiesResult = foodFacilitiesActionResult?.Value as List<FoodFacilityDto>;
 
+            Assert.Equal(StatusCodes.Status200OK, foodFacilitiesActionResult?.StatusCode);
             Assert.NotNull(foodFacilitiesResult);
             Assert.Equal(filteredFacilities.Count(), foodFacilitiesResult.Count());
             Assert.Equal(filteredFacilities.Select(x => x.Id), foodFacilitiesResult.Select(x => x.Id));
@@ -217,18 +248,19 @@ namespace FoodFacilities.Test
         [InlineData(37.78127595, -122.4318404, new string[] { "APPROVED", "EXPIRED", "ISSUED", "REQUESTED", "SUSPEND" })]
         public void FoodFacilityGetNearestFacilitiesSuccessWithStatus(double? latitude, double? longitude, string[]? status)
         {
-            var foodFacilitiesData = GetFoodFacilitiesData();
+            var filteredFacilities = GetNearestFacilities(GetFoodFacilitiesData(), latitude, longitude);
 
-            var filteredFacilities = GetNearestFacilities(foodFacilitiesData, latitude, longitude);
+            _mockFoodFacilityRepository.Setup(x => x.GetAsync(It.IsAny<Func<FoodFacility, bool>>())).ReturnsAsync(filteredFacilities);
 
-            _mockFoodFacilityService.Setup(x => x.GetNearestFoodTruckFacilitiesAsync(latitude, longitude, status).Result).Returns(filteredFacilities);
+            var mockFoodFacilityService = new FoodFacilityService(_mockFoodFacilityRepository.Object);
 
-            var foodFacilityController = new FoodFacilityController(_mockMapper, _mockFoodFacilityService.Object);
+            var foodFacilityController = new FoodFacilityController(_mockMapper, mockFoodFacilityService);
 
             var foodFacilitiesActionResult = foodFacilityController.GetNearestFoodTruckFacilitiesByGeolocationAsync(latitude, longitude, status).Result as ObjectResult;
 
             var foodFacilitiesResult = foodFacilitiesActionResult?.Value as List<FoodFacilityDto>;
 
+            Assert.Equal(StatusCodes.Status200OK, foodFacilitiesActionResult?.StatusCode);
             Assert.NotNull(foodFacilitiesResult);
             Assert.Equal(filteredFacilities.Count(), foodFacilitiesResult.Count());
             Assert.Equal(filteredFacilities.Select(x => x.Id), foodFacilitiesResult.Select(x => x.Id));
@@ -240,11 +272,15 @@ namespace FoodFacilities.Test
         [InlineData(37.78127595, -122.4318404, new string[] { "SUSPEND" })]
         public void FoodFacilityGetNearestFacilitiesFailNotFound(double? latitude, double? longitude, string[]? status)
         {
-            _mockFoodFacilityService.Setup(x => x.GetNearestFoodTruckFacilitiesAsync(latitude, longitude, status).Result);
+            _mockFoodFacilityRepository.Setup(x => x.GetAsync(It.IsAny<Func<FoodFacility, bool>>())).ReturnsAsync(new List<FoodFacility>());
 
-            var foodFacilityController = new FoodFacilityController(_mockMapper, _mockFoodFacilityService.Object);
+            var mockFoodFacilityService = new FoodFacilityService(_mockFoodFacilityRepository.Object);
 
-            Assert.ThrowsAsync<FoodFacilityNotFoundException>(() => foodFacilityController.GetNearestFoodTruckFacilitiesByGeolocationAsync(latitude, longitude, status));
+            var foodFacilityController = new FoodFacilityController(_mockMapper, mockFoodFacilityService);
+
+            var foodFacilitiesActionResult = foodFacilityController.GetNearestFoodTruckFacilitiesByGeolocationAsync(latitude, longitude, status).Result as ObjectResult;
+
+            Assert.Equal(StatusCodes.Status404NotFound, foodFacilitiesActionResult?.StatusCode);
         }
 
         [Theory]
@@ -256,11 +292,15 @@ namespace FoodFacilities.Test
         [InlineData(null, null, new string[] { "APPROVED", "EXPIRED" })]
         public void FoodFacilityGetNearestFacilitiesFailInvalidFilter(double? latitude, double? longitude, string[]? status)
         {
-            _mockFoodFacilityService.Setup(x => x.GetNearestFoodTruckFacilitiesAsync(latitude, longitude, status).Result);
+            _mockFoodFacilityRepository.Setup(x => x.GetAsync(It.IsAny<Func<FoodFacility, bool>>())).ReturnsAsync(new List<FoodFacility>());
 
-            var foodFacilityController = new FoodFacilityController(_mockMapper, _mockFoodFacilityService.Object);
+            var mockFoodFacilityService = new FoodFacilityService(_mockFoodFacilityRepository.Object);
 
-            Assert.ThrowsAsync<FoodFacilityNotFoundException>(() => foodFacilityController.GetNearestFoodTruckFacilitiesByGeolocationAsync(latitude, longitude, status));
+            var foodFacilityController = new FoodFacilityController(_mockMapper, mockFoodFacilityService);
+
+            var foodFacilitiesActionResult = foodFacilityController.GetNearestFoodTruckFacilitiesByGeolocationAsync(latitude, longitude, status).Result as ObjectResult;
+
+            Assert.Equal(StatusCodes.Status400BadRequest, foodFacilitiesActionResult?.StatusCode);
         }
 
         #endregion
