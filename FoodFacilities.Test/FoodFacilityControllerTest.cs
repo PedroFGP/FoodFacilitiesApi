@@ -1,11 +1,13 @@
 using AutoMapper;
 using FoodFacilities.Adapters.Driving.WebApi.Controllers;
+using FoodFacilities.Adapters.Driving.WebApi.Dtos;
 using FoodFacilities.Adapters.Driving.WebApi.Mapping;
 using FoodFacilities.Domain.Adapters.Driven.Repositories;
 using FoodFacilities.Domain.Entities;
 using FoodFacilities.Domain.Exceptions;
 using FoodFacilities.Domain.Services;
 using FoodFacilities.Domain.Utils;
+using Microsoft.AspNetCore.Mvc;
 using Moq;
 using System.IO;
 using static System.Net.WebRequestMethods;
@@ -45,7 +47,9 @@ namespace FoodFacilities.Test
 
             var foodFacilityController = new FoodFacilityController(_mockMapper, _mockFoodFacilityService.Object);
 
-            var foodFacilitiesResult = foodFacilityController.GetFoodFacilitiesByApplicantAsync(applicant, status).Result;
+            var foodFacilitiesActionResult = foodFacilityController.GetFoodFacilitiesByApplicantAsync(applicant, status).Result as ObjectResult;
+
+            var foodFacilitiesResult = foodFacilitiesActionResult?.Value as List<FoodFacilityDto>;
 
             Assert.NotNull(foodFacilitiesResult);
             Assert.Equal(filteredFacilities.Count(), foodFacilitiesResult.Count());
@@ -69,7 +73,9 @@ namespace FoodFacilities.Test
 
             var foodFacilityController = new FoodFacilityController(_mockMapper, _mockFoodFacilityService.Object);
 
-            var foodFacilitiesResult = foodFacilityController.GetFoodFacilitiesByApplicantAsync(applicant, status).Result;
+            var foodFacilitiesActionResult = foodFacilityController.GetFoodFacilitiesByApplicantAsync(applicant, status).Result as ObjectResult;
+
+            var foodFacilitiesResult = foodFacilitiesActionResult?.Value as List<FoodFacilityDto>;
 
             Assert.NotNull(foodFacilitiesResult);
             Assert.Equal(filteredFacilities.Count(), foodFacilitiesResult.Count());
@@ -144,7 +150,9 @@ namespace FoodFacilities.Test
 
             var foodFacilityController = new FoodFacilityController(_mockMapper, _mockFoodFacilityService.Object);
 
-            var foodFacilitiesResult = foodFacilityController.GetFoodFacilitiesByStreetAsync(street).Result;
+            var foodFacilitiesActionResult = foodFacilityController.GetFoodFacilitiesByStreetAsync(street).Result as ObjectResult;
+
+            var foodFacilitiesResult = foodFacilitiesActionResult?.Value as List<FoodFacilityDto>;
 
             Assert.NotNull(foodFacilitiesResult);
             Assert.Equal(filteredFacilities.Count(), foodFacilitiesResult.Count());
@@ -194,7 +202,9 @@ namespace FoodFacilities.Test
 
             var foodFacilityController = new FoodFacilityController(_mockMapper, _mockFoodFacilityService.Object);
 
-            var foodFacilitiesResult = foodFacilityController.GetNearestFoodTruckFacilitiesByGeolocationAsync(latitude, longitude, status).Result;
+            var foodFacilitiesActionResult = foodFacilityController.GetNearestFoodTruckFacilitiesByGeolocationAsync(latitude, longitude, status).Result as ObjectResult;
+
+            var foodFacilitiesResult = foodFacilitiesActionResult?.Value as List<FoodFacilityDto>;
 
             Assert.NotNull(foodFacilitiesResult);
             Assert.Equal(filteredFacilities.Count(), foodFacilitiesResult.Count());
@@ -215,7 +225,9 @@ namespace FoodFacilities.Test
 
             var foodFacilityController = new FoodFacilityController(_mockMapper, _mockFoodFacilityService.Object);
 
-            var foodFacilitiesResult = foodFacilityController.GetNearestFoodTruckFacilitiesByGeolocationAsync(latitude, longitude, status).Result;
+            var foodFacilitiesActionResult = foodFacilityController.GetNearestFoodTruckFacilitiesByGeolocationAsync(latitude, longitude, status).Result as ObjectResult;
+
+            var foodFacilitiesResult = foodFacilitiesActionResult?.Value as List<FoodFacilityDto>;
 
             Assert.NotNull(foodFacilitiesResult);
             Assert.Equal(filteredFacilities.Count(), foodFacilitiesResult.Count());
