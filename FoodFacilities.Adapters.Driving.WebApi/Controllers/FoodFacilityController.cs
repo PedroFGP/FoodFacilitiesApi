@@ -24,11 +24,19 @@ namespace FoodFacilities.Adapters.Driving.WebApi.Controllers
         }
 
         [HttpGet("facilities/applicant")]
-        [SwaggerOperation(Summary = "Retrieves the list of food facilities that match the given applicant", Description = "Optional status filter should be used to filter out desired status, being: (APPROVED, EXPIRED, ISSUED, REQUESTED, SUSPEND) the supported values.")]
+        [SwaggerOperation(Summary = "Retrieves the list of food facilities that match the given applicant")]
         [SwaggerResponse(StatusCodes.Status200OK, "Request successful.", typeof(List<FoodFacilityDto>))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, "Invalid filter/query parameters.", typeof(string))]
         [SwaggerResponse(StatusCodes.Status404NotFound, "No food facilities found given the parameters.", typeof(string))]
-        public async Task<IActionResult> GetFoodFacilitiesByApplicantAsync([FromQuery] string applicant, [FromQuery] string[]? status)
+        public async Task<IActionResult> GetFoodFacilitiesByApplicantAsync
+        (
+            [SwaggerParameter("Applicant to be searched for.")]
+            [FromQuery] 
+            string applicant, 
+            [SwaggerParameter("Optional status filter should be used to filter out desired status, being: (APPROVED, EXPIRED, ISSUED, REQUESTED, SUSPEND) the supported values.")]
+            [FromQuery] 
+            string[]? status
+        )
         {
             try
             {
@@ -43,10 +51,16 @@ namespace FoodFacilities.Adapters.Driving.WebApi.Controllers
         }
 
         [HttpGet("facilities/street")]
-        [SwaggerOperation(Summary = "Retrieves the list of food facilities that match the given street", Description = "This can be a part of the Address and it's case insensitive.")]
+        [SwaggerOperation(Summary = "Retrieves the list of food facilities that match the given street")]
         [SwaggerResponse(StatusCodes.Status200OK, "Request successful.", typeof(List<FoodFacilityDto>))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, "Invalid filter/query parameters.", typeof(string))]
         [SwaggerResponse(StatusCodes.Status404NotFound, "No food facilities found given the street.", typeof(string))]
-        public async Task<IActionResult> GetFoodFacilitiesByStreetAsync([FromQuery] string street)
+        public async Task<IActionResult> GetFoodFacilitiesByStreetAsync
+        (
+            [SwaggerParameter("Street to be searched for. This can be a part of the Address and it's case insensitive.")]
+            [FromQuery] 
+            string street
+        )
         {
             try
             {
@@ -61,11 +75,22 @@ namespace FoodFacilities.Adapters.Driving.WebApi.Controllers
         }
 
         [HttpGet("facilities/nearest-food-trucks")]
-        [SwaggerOperation(Summary = "Retrieves the top 5 food trucks facilities that are closest to the given latitude and longitude", Description = "Optional status filter should be used to filter out desired status, being: (APPROVED, EXPIRED, ISSUED, REQUESTED, SUSPEND) the supported values. If no status is sent APPROVED status is enforced!")]
+        [SwaggerOperation(Summary = "Retrieves the top 5 food trucks facilities that are closest to the given latitude and longitude")]
         [SwaggerResponse(StatusCodes.Status200OK, "Request successful.", typeof(List<FoodFacilityDto>))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, "Invalid filter/query parameters.", typeof(string))]
         [SwaggerResponse(StatusCodes.Status404NotFound, "No food facilities found given the parameters.", typeof(string))]
-        public async Task<IActionResult> GetNearestFoodTruckFacilitiesByGeolocationAsync([FromQuery] double? latitude, [FromQuery] double? longitude, [FromQuery] string[]? status)
+        public async Task<IActionResult> GetNearestFoodTruckFacilitiesByGeolocationAsync
+        (
+            [SwaggerParameter("Latitude for the search location.")]
+            [FromQuery] 
+            double? latitude, 
+            [SwaggerParameter("Longitude for the search location.")]
+            [FromQuery] 
+            double? longitude,
+            [SwaggerParameter("Optional status filter should be used to filter out desired status, being: (APPROVED, EXPIRED, ISSUED, REQUESTED, SUSPEND) the supported values.")]
+            [FromQuery] 
+            string[]? status
+        )
         {
             try
             {
