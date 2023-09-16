@@ -26,10 +26,13 @@ There are few areas where there is room for improvement:
 
 - Add a cache system (redis, etc...) for queries based on parameters in order to make the response time faster (currently it's not slow, but the database is miniscule, and the queries are simple)
 - A better definition and slim down version of the DTO returned by the API
+- Add a paged return of the response
 - Improve the swagger documentation by adding the schemas definitions, example values for parameters and more detailed responses
 - Use a proper database engine (import the csv file to a SQL/PostgreSql database and use EF as the ORM)
 - Add more scenarios to unit testing
 - Add githooks to execute the tests before committing
+- Add translation (i18) to other languages
+- Create a pipeline where the connection string would be kept in a vault and injected during deployment (production environment)
 
 ### Trade-offs
 

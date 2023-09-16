@@ -29,7 +29,7 @@ namespace FoodFacilities.Application.Services
             var facilities = await _foodFacilityRepository.GetAsync(x =>
                 x.Applicant is not null 
                 && 
-                x.Applicant.ToLower() == applicant.ToLower()
+                x.Applicant.Trim().ToLower() == applicant.Trim().ToLower()
                 &&
                 (
                     filterStatus is null 
@@ -41,7 +41,7 @@ namespace FoodFacilities.Application.Services
             );
 
             if (!facilities.Any())
-                throw new FoodFacilityNotFoundException("No food facility found for the given applicant.");
+                throw new FoodFacilityNotFoundException("No food facility found for the given applicant/status.");
 
             return facilities;
         }
@@ -102,7 +102,7 @@ namespace FoodFacilities.Application.Services
             var nearestFailicites = facilities.Where(x => nearestFailicitesIds.Contains(x.Id)).ToList();
 
             if (!nearestFailicites.Any())
-                throw new FoodFacilityNotFoundException("No food facility found for the given latitude/longitude.");
+                throw new FoodFacilityNotFoundException("No food facility found for the given latitude/longitude/status.");
 
             return nearestFailicites;
         }
