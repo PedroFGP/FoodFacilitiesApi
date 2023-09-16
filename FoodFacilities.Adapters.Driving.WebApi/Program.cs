@@ -2,6 +2,7 @@ using FoodFacilities.Application.Adapters.Driven.Csv;
 using FoodFacilities.Application.Services;
 using FoodFacilities.Domain.Adapters.Driven.Repositories;
 using FoodFacilities.Domain.Services;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,7 +17,19 @@ builder.Services.AddTransient<IFoodFacilityRepository, FoodFacilityCsvRepository
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+
+var swaggerDocName = "FoodFacilityApi";
+
+builder.Services.AddSwaggerGen(options => 
+{
+    options.EnableAnnotations();
+    options.SwaggerDoc(swaggerDocName, new OpenApiInfo 
+    { 
+        Title = "Food Facility API Challenge Swagger Documentation",
+        Description = "API built to retrieve food facilities with different filters and parameters.",
+        Version = "v1"
+    });
+});
 
 var app = builder.Build();
 
@@ -24,7 +37,10 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(options => 
+    { 
+        options.SwaggerEndpoint($"/swagger/{swaggerDocName}/swagger.json", "Food Facility API Challenge v1");
+    });
 }
 
 app.UseHttpsRedirection();
